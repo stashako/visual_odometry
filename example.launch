@@ -1,0 +1,39 @@
+<launch>
+
+	<!-- Arguments -->
+	<arg name="bagfile" default="/home/shervin/Downloads/test.bag"/> <!-- Find it on http://srv.uib.es/public/viso2_ros/sample_bagfiles/  -->
+    <param name="/use_sim_time" value="true"/>
+
+    <!-- Play the bagfile -->
+    <node pkg="rosbag" type="play" name="rosbag" args="--clock $(arg bagfile)" />
+
+    <!-- Run the stereo image proc -->
+    <!-- <node ns="$(arg camera)" pkg="stereo_image_proc" type="stereo_image_proc" name="stereo_image_proc" />-->
+
+	<node name="camera_tf"
+		pkg="tf" 
+		type="static_transform_publisher" 
+		args="0.0 0.0 0.0 0.0 0.0 0.0 1.0 base_link openni_rgb_optical_frame 20" /> 
+
+
+    <!-- Uncompress data -->
+    <node name="republish_rgb" 
+          type="republish" 
+          pkg="image_transport" 
+          args="compressed in:=/data_throttled_image raw out:=/camera/rgb" />
+    
+    <!-- Viso2 -->
+    <node pkg="viso2_ros" type="mono_odometer" name="mono_odometer" output="screen">
+        <remap from="mono" to="/camera"/>
+        <remap from="image" to="/camera/rgb"/>
+        <remap from="/camera/camera_info" to="/data_throttled_camera_info"/>
+
+        <param name="base_link_frame_id" value="/base_link"/>
+        <param name="camera_height" value="480"/>
+        <param name="sensor_frame_id" value="/openni_rgb_optical_frame"/>
+
+        <param name="camera_height" value="1.00" />
+        <param name="camera_pitch"  value="0.00" />
+    </node> 
+
+</launch>

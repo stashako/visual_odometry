@@ -1,0 +1,37 @@
+<launch>
+
+  <include file="$(find video_stream_opencv)/launch/camera.launch"/>
+
+  <node pkg="tf" type="static_transform_publisher" name="odom_to_map" args="0 0 0 0 -1.57079632679 -1.57079632679 camera map 30"/>
+  <node pkg="tf" type="static_transform_publisher" name="odom_to_map1" args="1 0 0 0 0 0  camera base_link 30"/>
+  <arg name="camera" default="/camera"/>
+  <arg name="calib" default="/home/shervin/catkin_ws_2/src/viso2/data/calib_results.txt"/>
+  <node ns="$(arg camera)" pkg="image_proc" type="image_proc" name="image_proc" />
+
+  <!--<param name="/use_sim_time" value="true"/>-->
+ 
+
+  <!-- Republishes the compressed topic so it can be used to image_proc node 
+  <node name="republish" type="republish" pkg="image_transport" output="screen" args="compressed in:=$(arg camera) raw out:=$(arg camera)" />-->
+  
+  
+
+  <!-- Run the viso2_ros package -->
+  <node pkg="viso2_ros" type="mono_odometer_omnidirectional" name="mono_odometer" output="screen">
+      <param name="image" value="$(arg camera)/image_rect"/>
+
+      <param name="max_features" value="10" />
+      <param name="motion_threshold" value="100" />
+      <param name="camera_height" value="1.12" />
+      <param name="camera_pitch"  value="0.00" />
+
+      <param name="base_link_frame_id" value="base_link"/>
+      <param name="publish_tf" value="true"/>
+      <param name="odom_frame_id" value="camera"/>
+
+      <param name="calib_path" value="$(arg calib)" />
+  </node>
+  
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find viso2_ros)/urdf.rviz" required="true" />
+
+</launch>

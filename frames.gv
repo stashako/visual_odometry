@@ -1,0 +1,8 @@
+digraph G {
+"camera" -> "map"[label="Broadcaster: /odom_to_map\nAverage rate: 65.960 Hz\nMost recent transform: 1568056706.982 ( -0.014 sec old)\nBuffer length: 4.973 sec\n"];
+"camera" -> "base_link"[label="Broadcaster: /mono_odometer\nAverage rate: 3.358 Hz\nMost recent transform: 1568056706.335 ( 0.633 sec old)\nBuffer length: 4.466 sec\n"];
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 1568056706.968"[ shape=plaintext ] ;
+ }->"camera";
+}

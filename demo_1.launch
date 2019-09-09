@@ -1,0 +1,23 @@
+<launch>
+ 
+  <include file="$(find video_stream_opencv)/launch/camera.launch"/>
+
+  <node pkg="tf" type="static_transform_publisher" name="odom_to_map" args="0 0 0 0 -1.57079632679 -1.57079632679 visual_odom map 30"/>
+
+  <arg name="camera" default="/camera"/>
+  <arg name="calib" default="/home/shervin/catkin_ws_2/src/viso2/data/calib_results.txt"/>
+  <!-- Run the stereo image proc -->
+  <node ns="$(arg camera)" pkg="image_proc" type="image_proc" name="image_proc" />
+  
+  
+
+  <!-- Viso2 -->
+  <node pkg="viso2_ros" type="mono_odometer" name="mono_odometer">
+    <remap from="image" to="$(arg camera)/image_rect"/>
+    <param name="base_link_frame_id" value="visual_odom"/>
+
+    <param name="camera_height" value="1.00" />
+    <param name="camera_pitch"  value="0.00" />
+  </node> 
+
+</launch>
